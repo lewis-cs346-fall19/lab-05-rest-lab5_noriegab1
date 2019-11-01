@@ -1,0 +1,97 @@
+#! /usr/bin/python3
+
+import cgi
+import cgitb
+cgitb.enable()
+
+import json
+import os
+
+form = cgi.FieldStorage()
+
+
+
+def index():
+    print("Status: 200 OK")
+    print("Content-type: text/html")
+    print()
+
+    print("Main Page for Rest Website")
+    print("<br /> <hr />")
+    print("<a href='/cgi-bin/nordi/list_all_pets/'>List All Pets</a>")
+    print("<br />")
+    print("<a href='/cgi-bin/nordi/form'>Add to Pets</a>")
+
+def list_all_pets():
+    print("Status: 200 OK")
+    print("Content-type: application/json")
+    print()
+
+    print("This is where we'd list all of the pets")
+
+    print("<br /><hr />")
+    print("<a href='/cgi-bin/nordi/'>Home</a>")
+
+def trampoline():
+    print("Status: 302 Redirect")
+    print("Location: landing_pad")
+    print()
+
+def landing_pad():
+    print("Status: 200 OK")
+    print("Content-type: text/html")
+    print()
+
+    print("This is the landing pad, after the redirect")
+
+def post_something():
+    print("Status: 200 OK")
+    print("Content-type: text/html")
+    print()
+
+    print("<form action='/cgi-bin/nordi/pets' method='post'>")
+    print("<input name='name' value='name'>")
+    print("<br />")
+    print("<input name='type' value='type'>")
+    print("<br />")
+    print("<input type='Submit'>")
+    print("</form>")
+
+
+    if "aborty" in form and form["aborty"].value == "yessir":
+        print("Status: 200 OK")
+        print("Content-type: text/plain")
+        print()
+
+        print("Nope!")
+        return
+
+    # we're all done, redirect to the query page.
+    print("Status: 302 Redirect")
+    print("Location: list_all_pets")
+    print()
+
+if "PATH_INFO" in os.environ:
+    pathinfo = os.environ["PATH_INFO"]
+else:
+    pathinfo = "/"
+
+
+if pathinfo == "/" or pathinfo == "/cgi-bin/nordi":
+    index()
+elif pathinfo == "/list_all_pets" or pathinfo == "/list_all_pets/" :
+    list_all_pets()
+elif pathinfo == "/trampoline":
+    trampoline()
+elif pathinfo == "/landing_pad":
+    landing_pad()
+elif pathinfo == "/form":
+    post_something()
+
+else:
+    print("Status: 404 Not Found")
+    print()
+
+    print("404: Page Not Found")
+    print("The CGI path '{}', underneath the 'pathinfo' tool, was not a valid URL.".format(pathinfo))
+
